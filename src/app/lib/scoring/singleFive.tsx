@@ -5,10 +5,6 @@
 import { DiceValue } from "../../components/dice";
 
 export function singleFive(diceValue: DiceValue) {
-  if (!diceValue || diceValue.length === 0) return 0;
-  const counts = new Array(7).fill(0);
-  const values = diceValue.map((d) => d.value);
-  values.forEach((v) => counts[v]++);
   const score = 0;
 
   let newScore = score;
@@ -16,7 +12,7 @@ export function singleFive(diceValue: DiceValue) {
     (die) => die.value === 5 && !die.held && !die.previouslyHeld
   );
 
-  if (fives.length >= 1 && fives.length < 3) {
+  if (fives.length >= 1 || fives.length < 3) {
     newScore = fives.length * 50;
   }
   if (fives.length >= 3) {

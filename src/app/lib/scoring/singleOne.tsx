@@ -5,18 +5,13 @@
 import { DiceValue } from "../../components/dice";
 
 export function singleOne(diceValue: DiceValue) {
-  if (!diceValue || diceValue.length === 0) return 0;
-  const counts = new Array(7).fill(0);
-  const values = diceValue.map((d) => d.value);
-  values.forEach((v) => counts[v]++);
   const score = 0;
-
   let newScore = score;
   const ones = diceValue.filter(
     (die) => die.value === 1 && !die.held && !die.previouslyHeld
   );
 
-  if (ones.length >= 1 && ones.length < 3) {
+  if (ones.length >= 1 || ones.length < 3) {
     newScore = ones.length * 100;
   }
   if (ones.length >= 3) {

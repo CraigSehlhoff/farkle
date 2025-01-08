@@ -20,8 +20,15 @@ export default function Home() {
   const [totalScore, setTotalScore] = useState(0);
   const [farkle, setFarkle] = useState(false);
 
-  const { singleOneValue, singleFiveValue, totalPossibleRollScore } =
-    allScoring(diceValue);
+  const {
+    singleOneValue,
+    singleFiveValue,
+    threeOfAKindValue,
+    fourOfAKindValue,
+    fiveOfAKindValue,
+    sixOfAKindValue,
+    totalPossibleRollScore,
+  } = allScoring(diceValue);
   // console.log(allScoring(diceValue));
 
   function rollDice() {
@@ -33,13 +40,12 @@ export default function Home() {
       )
     );
     setPossibleRollScore(totalPossibleRollScore);
+    setLiveDiceScore(totalPossibleRollScore);
 
     console.log("TotalPossibleRollScore rollDice:", totalPossibleRollScore);
     console.log("possibleRollScore:", possibleRollScore);
     // checkFarkle();
   }
-
-  //I need to get the totalPossibleRollScore when rollDice is called, if the totalPossibleRollScore is 0 then I need to setFarkle to true...right now when i call rollDice totalPossibleRollScore is not updating properly, it is using the last value before rollDice was called
 
   // these are TWO different ways to try and figure out how to get the farkle to work........
   // function checkFarkle() {
@@ -57,33 +63,42 @@ export default function Home() {
   //   alert("FARKLE!");
   // }
 
-  //hey...you almost have farkle working...you can test it yourself!
-  //you will see that when you farkle the game will completely bug out and send you back to the start screen basically...you have to figure this out...you were just on to something with changing the startgame/newgame functions but then got distracted when your bug called...just stay focused and figure this out...once you get farkle you basically got this shit
-
   useEffect(() => {
-    setLiveDiceScore(singleOneValue + singleFiveValue);
-    console.log("liveDiceScore useEffect:", liveDiceScore);
+    setLiveDiceScore(
+      singleOneValue +
+        singleFiveValue +
+        threeOfAKindValue +
+        fourOfAKindValue +
+        fiveOfAKindValue +
+        sixOfAKindValue
+    );
+    console.log("totalpossiblerollscore use effect:", totalPossibleRollScore);
+    console.log("livedicescore use effect:", liveDiceScore);
   }, [diceValue]);
 
-  // console.log("LiveDiceScore: under useEffect", liveDiceScore);
   if (
     gameStarted &&
     liveDiceScore === 0 &&
+    totalPossibleRollScore === 0 &&
     diceValue.every((die) => !die.held)
   ) {
     setFarkle(true);
     console.log("FARKLE!");
     setGameStarted(false);
     // alert("FARKLE!");
+    console.log("dice value on farkle:", diceValue);
+    console.log("live dice score on farkle:", liveDiceScore);
+    console.log("possible roll score on farkle:", possibleRollScore);
+    console.log("total possible roll score on farkle:", totalPossibleRollScore);
   }
 
   function holdDie(id: string) {
     setDiceValue(
       diceValue.map((die) => {
         if (die.id === id) {
-          console.log("holdDie p2:", diceValue);
           return { ...die, held: true ? !die.held : die.held };
         }
+        console.log("holdDie p2:", diceValue);
         if (die.id === id && die.previouslyHeld) {
           console.log("holdDie p1:", diceValue);
           return die;
@@ -102,17 +117,23 @@ export default function Home() {
         <span className="text-5xl">FARKLE!</span>
       </div>
       {!gameStarted && <PreGameDice />}
-      {!gameStarted && <StartGame setGameStarted={setGameStarted} />}
-      {gameStarted && (
-        <NewGame
-          setDiceValue={setDiceValue}
-          setLiveDiceScore={setLiveDiceScore}
-          setPossibleRollScore={setPossibleRollScore}
-          setCurrentRoundScore={setCurrentRoundScore}
-          setTotalScore={setTotalScore}
+      {/* {!gameStarted && (
+        <StartGame
+          setGameStarted={setGameStarted}
           setFarkle={setFarkle}
+          rollDice={rollDice}
         />
-      )}
+      )} */}
+      <NewGame
+        setGameStarted={setGameStarted}
+        setDiceValue={setDiceValue}
+        setLiveDiceScore={setLiveDiceScore}
+        setPossibleRollScore={setPossibleRollScore}
+        setCurrentRoundScore={setCurrentRoundScore}
+        setTotalScore={setTotalScore}
+        setFarkle={setFarkle}
+        rollDice={rollDice}
+      />
       {gameStarted && <div>Live Dice Score: {liveDiceScore}</div>}
       {/* {gameStarted && <div>Possible Roll Score: {possibleRollScore}</div>} */}
       {gameStarted && (

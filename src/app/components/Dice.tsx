@@ -34,11 +34,11 @@ export type DiceValue = {
   id: string;
 }[];
 
-type LiveDiceProps = {
+type DiceProps = {
   diceValue: DiceValue;
   holdDie: (id: string) => void;
 };
-export function LiveDice({ diceValue, holdDie }: LiveDiceProps) {
+export function LiveDice({ diceValue, holdDie }: DiceProps) {
   const getDiceImages = diceValue.map((die) => {
     return (
       !die.held &&
@@ -57,7 +57,7 @@ export function LiveDice({ diceValue, holdDie }: LiveDiceProps) {
   return <div className="flex flex-wrap justify-center">{getDiceImages}</div>;
 }
 
-export function HeldDice({ diceValue, holdDie }: LiveDiceProps) {
+export function HeldDice({ diceValue, holdDie }: DiceProps) {
   const getDiceImages = diceValue.map((die) => {
     return (
       (die.held || die.previouslyHeld) && (

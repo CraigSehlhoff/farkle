@@ -18,7 +18,6 @@ export function threeOfAKind(diceValue: DiceValue) {
   );
 
   if (threeOfAKindValue > 0) {
-    console.log("threeOfAKindValue from threeOfAKind:", threeOfAKindValue);
     return threeOfAKindValue === 1 ? 300 : threeOfAKindValue * 100;
   }
 

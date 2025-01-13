@@ -2,17 +2,17 @@
 import React from "react";
 
 type modalProps = {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  handleClickClose: () => void;
   children: React.ReactNode;
 };
 
-const Modal = ({ isOpen, onClose, children }: modalProps) => {
-  if (!isOpen) return null;
+const Modal = ({ open, handleClickClose, children }: modalProps) => {
+  if (!open) return null;
 
   return (
     <div
-      onClick={onClose}
+      onClick={handleClickClose}
       style={{
         position: "fixed",
         top: 0,
@@ -27,7 +27,6 @@ const Modal = ({ isOpen, onClose, children }: modalProps) => {
     >
       <div
         style={{
-          background: "green",
           height: 500,
           width: 600,
           margin: "auto",
@@ -37,6 +36,7 @@ const Modal = ({ isOpen, onClose, children }: modalProps) => {
           boxShadow: "2px solid black",
           overflow: "auto",
         }}
+        className="bg-slate-100"
       >
         {children}
       </div>

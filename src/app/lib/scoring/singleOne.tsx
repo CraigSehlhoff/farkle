@@ -19,3 +19,17 @@ export function singleOne(diceValue: DiceValue) {
   }
   return newScore;
 }
+
+export function heldSingleOne(diceValue: DiceValue) {
+  const score = 0;
+  let newScore = score;
+  const ones = diceValue.filter((die) => die.value === 1 && die.held);
+
+  if (ones.length >= 1 || ones.length < 3) {
+    newScore = ones.length * 100;
+  }
+  if (ones.length >= 3) {
+    newScore = 0;
+  }
+  return newScore;
+}

@@ -9,7 +9,8 @@ import {
 import { NewGame, StartGame } from "./components/NewGame";
 import Rules from "./lib/Rules";
 import { useState, useEffect } from "react";
-import { allScoring } from "./lib/scoring/allScoring";
+import { allScoring, heldAllScoring } from "./lib/scoring/allScoring";
+import FarkleModal from "./lib/Farkle";
 
 export default function Home() {
   const [diceValue, setDiceValue] = useState(allNewDice());
@@ -20,62 +21,57 @@ export default function Home() {
   const [totalScore, setTotalScore] = useState(0);
   const [farkle, setFarkle] = useState(false);
 
-  const {
-    singleOneValue,
-    singleFiveValue,
-    threeOfAKindValue,
-    fourOfAKindValue,
-    fiveOfAKindValue,
-    sixOfAKindValue,
-    totalPossibleRollScore,
-  } = allScoring(diceValue);
-  // console.log(allScoring(diceValue));
+  //I want to update the score and what is displayed for the player.
+  //Right now I have the live dice score displayed and updating correctly but that is it.
+  //The possibleRollScore has to be displayed and it will show the MAX amount of points that the current roll can be immediately after it is rolled.  This can be equal to the liveDiceScore but can not update when liveDiceScore updates during a turn.
+  //The currentRoundScore has to be the score that the player just banked.  It should basically work as the inverse of the liveDiceScore.  It will basically be the total score of all the held/previous held dice.
+
+  //right now I am having an issue trying to figure out the currentRoundScore.  There is a good chance that I might have made the scoring functions a bit too precise and since I have each one checking each diceValue to see if they are neither held nor previously held I cant easily get the score of any held or previously held dice.  I feel as If I will need to update each scoring function to be able to give a new value if the dice is held and be able to return that value separately.  I will also have to update the new round score each roll by adding the previous round score to the new round score of the current turn.
+
+  //The currentRoundScore will be the score that is added to the totalScore when the player decides to end their turn.  This has to be at LEAST 500 points for the player to have entered the game.
+  // There needs to be another state where the player enters the game.
+  //I have to set another state of the totalRound score that will be the total of all the rounds the player took this turn...i.e if they did NOT farkle and used all 6 dice and continue rolling/playing
+
+  const { totalPossibleRollScore } = allScoring(diceValue);
+  const { heldSingleOneValue } = heldAllScoring(diceValue);
 
   function rollDice() {
-    setDiceValue((dice) =>
-      dice.map((die) =>
+    setDiceValue((dice) => {
+      const newDice = dice.map((die) =>
         die.held || die.previouslyHeld
           ? { ...die, previouslyHeld: true, held: false }
           : newDie()
-      )
-    );
-    setPossibleRollScore(totalPossibleRollScore);
-    setLiveDiceScore(totalPossibleRollScore);
+      );
 
-    console.log("TotalPossibleRollScore rollDice:", totalPossibleRollScore);
-    console.log("possibleRollScore:", possibleRollScore);
-    // checkFarkle();
+      const newTotalPossibleRollScore =
+        allScoring(newDice).totalPossibleRollScore;
+      setPossibleRollScore(newTotalPossibleRollScore);
+
+      return newDice;
+    });
   }
 
-  // these are TWO different ways to try and figure out how to get the farkle to work........
-  // function checkFarkle() {
-  //   if (possibleRollScore === 0) {
-  //     setFarkle(true);
-  //     // alert("FARKLE!");
-  //   }
-  // }
-  // if (
-  //   gameStarted &&
-  //   liveDiceScore === 0 &&
-  //   diceValue.every((die) => !die.held)
-  // ) {
-  //   setFarkle(true);
-  //   alert("FARKLE!");
-  // }
-
   useEffect(() => {
-    setLiveDiceScore(
-      singleOneValue +
-        singleFiveValue +
-        threeOfAKindValue +
-        fourOfAKindValue +
-        fiveOfAKindValue +
-        sixOfAKindValue
-    );
+    setLiveDiceScore(totalPossibleRollScore);
+
+    setCurrentRoundScore(heldSingleOneValue);
+    // const numDiceHeld = diceValue.reduce((acc, curr) => {
+    //   if (curr.held || curr.previouslyHeld) {
+    //     acc += 1;
+    //   }
+    //   return acc;
+    // }, 0);
+    // if (numDiceHeld > 0) {
+    //   const newCurrentRoundScore = allScoring(
+    //     diceValue.filter((die) => die.held || die.previouslyHeld)
+    //   ).totalPossibleRollScore;
+    //   console.log(newCurrentRoundScore);
+    // }
     console.log("totalpossiblerollscore use effect:", totalPossibleRollScore);
     console.log("livedicescore use effect:", liveDiceScore);
   }, [diceValue]);
 
+  //setting farkle!
   if (
     gameStarted &&
     liveDiceScore === 0 &&
@@ -83,13 +79,7 @@ export default function Home() {
     diceValue.every((die) => !die.held)
   ) {
     setFarkle(true);
-    console.log("FARKLE!");
     setGameStarted(false);
-    // alert("FARKLE!");
-    console.log("dice value on farkle:", diceValue);
-    console.log("live dice score on farkle:", liveDiceScore);
-    console.log("possible roll score on farkle:", possibleRollScore);
-    console.log("total possible roll score on farkle:", totalPossibleRollScore);
   }
 
   function holdDie(id: string) {
@@ -107,8 +97,6 @@ export default function Home() {
       })
     );
   }
-
-  //you just got diceValue.held and diceValue.previouslyHeld to work properly...you're slowly getting there dude
 
   return (
     <div>
@@ -135,7 +123,8 @@ export default function Home() {
         rollDice={rollDice}
       />
       {gameStarted && <div>Live Dice Score: {liveDiceScore}</div>}
-      {/* {gameStarted && <div>Possible Roll Score: {possibleRollScore}</div>} */}
+      {gameStarted && <div>Possible Roll Score: {possibleRollScore}</div>}
+      {gameStarted && <div>Current Round Score: {currentRoundScore}</div>}
       {gameStarted && (
         <div className="text-center">
           Live Dice: <LiveDice diceValue={diceValue} holdDie={holdDie} />
@@ -148,6 +137,22 @@ export default function Home() {
         </div>
       )}
       {gameStarted && <button onClick={rollDice}>rollDice</button>}
+      {farkle && (
+        <FarkleModal
+          points={
+            currentRoundScore ? currentRoundScore : totalPossibleRollScore
+          }
+          rollDice={rollDice}
+          diceValue={diceValue}
+          setDiceValue={setDiceValue}
+          setLiveDiceScore={setLiveDiceScore}
+          setPossibleRollScore={setPossibleRollScore}
+          setCurrentRoundScore={setCurrentRoundScore}
+          farkle={farkle}
+          setFarkle={setFarkle}
+          setGameStarted={setGameStarted}
+        />
+      )}
       <Rules />
     </div>
   );

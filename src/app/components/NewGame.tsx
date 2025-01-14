@@ -1,12 +1,6 @@
 "use client";
 import { allNewDice } from "./Dice";
 
-type startGameProps = {
-  setGameStarted: (value: boolean) => void;
-  setFarkle: (value: boolean) => void;
-  rollDice: () => void;
-};
-
 type DiceValue = {
   value: number;
   held: boolean;
@@ -20,27 +14,13 @@ type newGameProps = {
   setLiveDiceScore: (value: number) => void;
   setPossibleRollScore: (value: number) => void;
   setCurrentRoundScore: (value: number) => void;
+  setPrevRoundScore: (value: number) => void;
   setTotalScore: (value: number) => void;
   setFarkle: (value: boolean) => void;
   rollDice: () => void;
+  setEnteredGame: (value: boolean) => void;
+  setYouWin: (value: boolean) => void;
 };
-
-export function StartGame({
-  setGameStarted,
-  setFarkle,
-  rollDice,
-}: startGameProps) {
-  function startGame() {
-    setGameStarted(true);
-    setFarkle(false);
-    rollDice();
-  }
-  return (
-    <div>
-      <button onClick={startGame}>Start Game</button>
-    </div>
-  );
-}
 
 export function NewGame({
   setGameStarted,
@@ -48,23 +28,35 @@ export function NewGame({
   setLiveDiceScore,
   setPossibleRollScore,
   setCurrentRoundScore,
+  setPrevRoundScore,
   setTotalScore,
   setFarkle,
   rollDice,
+  setEnteredGame,
+  setYouWin,
 }: newGameProps) {
   function newGame() {
+    setGameStarted(false);
     setGameStarted(true);
     setDiceValue(allNewDice());
+    rollDice();
+    setPrevRoundScore(0);
     setLiveDiceScore(0);
     setPossibleRollScore(0);
     setCurrentRoundScore(0);
     setTotalScore(0);
     setFarkle(false);
-    rollDice();
+    setEnteredGame(false);
+    setYouWin(false);
   }
   return (
-    <div>
-      <button onClick={newGame}>New Game</button>
+    <div className="flex justify-center">
+      <button
+        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider"
+        onClick={newGame}
+      >
+        New Game
+      </button>
     </div>
   );
 }

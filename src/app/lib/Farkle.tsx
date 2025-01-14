@@ -7,7 +7,8 @@ import Modal from "../components/Modal";
 import { LiveDice, HeldDice, DiceValue } from "../components/Dice";
 
 type farkleProps = {
-  points: number;
+  prevRoundScore: number;
+  setPrevRoundScore: React.Dispatch<React.SetStateAction<number>>;
   rollDice: () => void;
   diceValue: DiceValue;
   setDiceValue: React.Dispatch<
@@ -24,7 +25,8 @@ type farkleProps = {
 };
 
 export default function FarkleModal({
-  points,
+  prevRoundScore,
+  setPrevRoundScore,
   rollDice,
   diceValue,
   setDiceValue,
@@ -36,8 +38,10 @@ export default function FarkleModal({
   setGameStarted,
 }: farkleProps) {
   const [open, setOpen] = React.useState(farkle);
+
   const handleClick = () => {
     setOpen(false);
+    setFarkle(false);
     rollDice();
     setDiceValue((dice) =>
       dice.map((die) => ({ ...die, held: false, previouslyHeld: false }))
@@ -45,16 +49,20 @@ export default function FarkleModal({
     setLiveDiceScore(0);
     setPossibleRollScore(0);
     setCurrentRoundScore(0);
-    setFarkle(false);
     setGameStarted(true);
+    setPrevRoundScore(0);
   };
+  console.log(prevRoundScore);
+
   return (
     <Modal open={open} handleClickClose={() => {}}>
       <h1 className="font-extrabold text-3xl underline text-black text-center">
         Farkle!
       </h1>
       <div className="flex flex-col text-black items-center gap-5">
-        <div>You Farkled! You lost {points} points this round!</div>
+        <div>
+          You Farkled! You lost {prevRoundScore} potential points this round!
+        </div>
         You just rolled:
         <LiveDice diceValue={diceValue} holdDie={() => {}} />
         You had these dice held:

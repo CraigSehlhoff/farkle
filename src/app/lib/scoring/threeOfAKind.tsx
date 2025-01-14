@@ -2,7 +2,7 @@
 //I have to check if there are exactly three of a dice value that are live and not held nor previously held.
 //after checking their held states I will then add/return the score
 
-import { DiceValue } from "../../components/dice";
+import { DiceValue } from "../../components/Dice";
 import { initializeCounts } from "./initializeCounts";
 
 export function threeOfAKind(diceValue: DiceValue) {
@@ -19,6 +19,23 @@ export function threeOfAKind(diceValue: DiceValue) {
 
   if (threeOfAKindValue > 0) {
     return threeOfAKindValue === 1 ? 300 : threeOfAKindValue * 100;
+  }
+
+  return 0;
+}
+
+export function heldThreeOfAKind(diceValue: DiceValue) {
+  const { counts, isEmpty } = initializeCounts(diceValue);
+  if (isEmpty) return 0;
+
+  const heldThreeOfAKindValue = counts.findIndex(
+    (count, index) =>
+      count === 3 &&
+      diceValue.filter((die) => die.value === index && die.held).length === 3
+  );
+
+  if (heldThreeOfAKindValue > 0) {
+    return heldThreeOfAKindValue === 1 ? 300 : heldThreeOfAKindValue * 100;
   }
 
   return 0;

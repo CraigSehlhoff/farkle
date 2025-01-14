@@ -1,14 +1,14 @@
 import { singleOne, heldSingleOne } from "./singleOne";
-import { singleFive } from "./singleFive";
-import { threeOfAKind } from "./threeOfAKind";
-import { fourOfAKind } from "./fourOfAKind";
-import { fiveOfAKind } from "./fiveOfAKind";
-import { sixOfAKind } from "./sixOfAKind";
-import { fourAndTwoOfAKind } from "./fourAndTwoOfAKind";
-import { threePairs } from "./threePairs";
-import { twoTriplets } from "./twoTriplets";
-import { straight } from "./straight";
-import { DiceValue } from "../../components/dice";
+import { singleFive, heldSingleFive } from "./singleFive";
+import { threeOfAKind, heldThreeOfAKind } from "./threeOfAKind";
+import { fourOfAKind, heldFourOfAKind } from "./fourOfAKind";
+import { fiveOfAKind, heldFiveOfAKind } from "./fiveOfAKind";
+import { sixOfAKind, heldSixOfAKind } from "./sixOfAKind";
+import { fourAndTwoOfAKind, heldFourAndTwoOfAKind } from "./fourAndTwoOfAKind";
+import { threePairs, heldThreePairs } from "./threePairs";
+import { twoTriplets, heldTwoTriplets } from "./twoTriplets";
+import { straight, heldStraight } from "./straight";
+import { DiceValue } from "../../components/Dice";
 
 export function allScoring(diceValue: DiceValue) {
   const straightValue = straight(diceValue);
@@ -66,9 +66,59 @@ export function allScoring(diceValue: DiceValue) {
 }
 
 export function heldAllScoring(diceValue: DiceValue) {
+  const heldStraightValue = heldStraight(diceValue);
+  if (heldStraightValue > 0) {
+    return {
+      heldStraightValue,
+      heldTotalPossibleRollScore: heldStraightValue,
+    };
+  }
+  const heldFourAndTwoOfAKindValue = heldFourAndTwoOfAKind(diceValue);
+  if (heldFourAndTwoOfAKindValue > 0) {
+    return {
+      heldFourAndTwoOfAKindValue,
+      heldTotalPossibleRollScore: heldFourAndTwoOfAKindValue,
+    };
+  }
+  const heldThreePairsValue = heldThreePairs(diceValue);
+  if (heldThreePairsValue > 0) {
+    return {
+      heldThreePairsValue,
+      heldTotalPossibleRollScore: heldThreePairsValue,
+    };
+  }
+  const heldTwoTripletsValue = heldTwoTriplets(diceValue);
+  if (heldTwoTripletsValue > 0) {
+    return {
+      heldTwoTripletsValue,
+      heldTotalPossibleRollScore: heldTwoTripletsValue,
+    };
+  }
   const heldSingleOneValue = heldSingleOne(diceValue);
+  const heldSingleFiveValue = heldSingleFive(diceValue);
+  const heldThreeOfAKindValue = heldThreeOfAKind(diceValue);
+  const heldFourOfAKindValue = heldFourOfAKind(diceValue);
+  const heldFiveOfAKindValue = heldFiveOfAKind(diceValue);
+  const heldSixOfAKindValue = heldSixOfAKind(diceValue);
 
-  return { heldSingleOneValue };
+  const heldRollScoreUnderSixDie =
+    heldSingleOneValue +
+    heldSingleFiveValue +
+    heldThreeOfAKindValue +
+    heldFourOfAKindValue +
+    heldFiveOfAKindValue;
+
+  const heldRollScoreOverSixDie =
+    heldSixOfAKindValue +
+    heldFourAndTwoOfAKindValue +
+    heldStraightValue +
+    heldThreePairsValue +
+    heldTwoTripletsValue;
+
+  const heldTotalPossibleRollScore = heldRollScoreOverSixDie
+    ? heldRollScoreOverSixDie
+    : heldRollScoreUnderSixDie;
+  return { heldTotalPossibleRollScore };
 }
 
 //I would like to update the scoring here.  So there seems to be a bit of confusion on my part...I am returning EVERYTHING here for some reason where I could just be importing each thing elsewhere...that kind of defeats the purpose of doing this...

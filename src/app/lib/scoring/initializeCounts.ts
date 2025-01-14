@@ -1,4 +1,4 @@
-import { DiceValue } from "../../components/dice";
+import { DiceValue } from "../../components/Dice";
 
 export function initializeCounts(diceValue: DiceValue) {
   if (!diceValue || diceValue.length === 0) {

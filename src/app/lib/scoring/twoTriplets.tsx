@@ -2,7 +2,7 @@
 //I have to make sure that there are exactly two sets of 3 of a kind and that they are not held nor previously held.  I will then return a score of 2,500
 //This will be VERY close to the threePairs function but instead of checking for two of a kind three times, I will check for three of a kind twice.
 
-import { DiceValue } from "../../components/dice";
+import { DiceValue } from "../../components/Dice";
 import { initializeCounts } from "./initializeCounts";
 
 export function twoTriplets(diceValue: DiceValue) {
@@ -23,6 +23,28 @@ export function twoTriplets(diceValue: DiceValue) {
   });
 
   if (tripletsCount === 2) {
+    return 2500;
+  }
+
+  return 0;
+}
+
+export function heldTwoTriplets(diceValue: DiceValue) {
+  const { counts, isEmpty } = initializeCounts(diceValue);
+  if (isEmpty) return 0;
+
+  let heldTripletsCount = 0;
+
+  counts.forEach((count, index) => {
+    if (
+      count === 3 &&
+      diceValue.filter((die) => die.value === index && die.held).length === 3
+    ) {
+      heldTripletsCount++;
+    }
+  });
+
+  if (heldTripletsCount === 2) {
     return 2500;
   }
 

@@ -31,7 +31,7 @@ export default function Home() {
   const { heldTotalPossibleRollScore } = heldAllScoring(diceValue);
 
   function rollDice() {
-    console.log("prevRoundScore rolldice top:", prevRoundScore);
+    console.log("possible roll score rolldice top:", possibleRollScore);
     setPrevRoundScore((prev) => prev + currentRoundScore);
     setDiceValue((dice) => {
       const newDice = dice.map((die) =>
@@ -44,10 +44,10 @@ export default function Home() {
         allScoring(newDice).totalPossibleRollScore;
 
       setPossibleRollScore(newTotalPossibleRollScore);
-
+      console.log("possible roll score rolldice middle:", possibleRollScore);
       return newDice;
     });
-    console.log("prevRoundScore rolldice bottom:", prevRoundScore);
+    console.log("possible roll score rolldice bottom:", possibleRollScore);
   }
 
   function keepRolling() {
@@ -77,11 +77,15 @@ export default function Home() {
   //winning condition
 
   useEffect(() => {
-    if (totalScore >= 1000) {
+    if (totalScore >= 10000) {
       setYouWin(true);
       console.log(youWin);
     }
   }, [totalScore]);
+
+  useEffect(() => {
+    setPossibleRollScore(totalPossibleRollScore);
+  }, [farkle]);
 
   //setting farkle!
   if (
@@ -136,7 +140,7 @@ export default function Home() {
     "border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider";
 
   return (
-    <div>
+    <div className="h-screen">
       <div className="text-center mt-10 mb-10 flex justify-center align-middle">
         welcome to:
         <span className="text-5xl">FARKLE!</span>
@@ -195,15 +199,7 @@ export default function Home() {
           </button>
         )}
 
-        {/* believe it or not this is where you left off...so right now you are trying to move ahead with the game and have the option to enter the game if you have more than 500 points or end the turn if you have already entered the game and got points...
-      will need
-      -enter game button w/ function
-      -entered game state
-      -end turn button needs to be given a function...and actually styled
-
-      ALSO you will also have to come up with a keep rolling function or conditional where all the the dice are held.
-
-      There also has to be a way that I can stop people from adding dice that DO NOT add any new value to their total score...for example, if they rolled a single 1 they could add ALL other dice and keep rolling that way...there has to be someway to stop this from happening.... */}
+        {/* There also has to be a way that I can stop people from adding dice that DO NOT add any new value to their total score...for example, if they rolled a single 1 they could add ALL other dice and keep rolling that way...there has to be someway to stop this from happening.... */}
         {gameStarted &&
           !enteredGame &&
           !allDieHeld &&
@@ -239,7 +235,23 @@ export default function Home() {
         />
       )}
 
-      {youWin && <Winning youWin={youWin} setYouWin={setYouWin} />}
+      {youWin && (
+        <Winning
+          youWin={youWin}
+          setYouWin={setYouWin}
+          totalScore={totalScore}
+          setGameStarted={setGameStarted}
+          setDiceValue={setDiceValue}
+          setLiveDiceScore={setLiveDiceScore}
+          setPossibleRollScore={setPossibleRollScore}
+          setCurrentRoundScore={setCurrentRoundScore}
+          setPrevRoundScore={setPrevRoundScore}
+          setTotalScore={setTotalScore}
+          setFarkle={setFarkle}
+          rollDice={rollDice}
+          setEnteredGame={setEnteredGame}
+        />
+      )}
 
       <Rules />
     </div>

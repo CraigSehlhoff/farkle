@@ -23,6 +23,7 @@ const Modal = ({ open, handleClickClose, children }: modalProps) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        opacity: 0.97,
       }}
     >
       <div

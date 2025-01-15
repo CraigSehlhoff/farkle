@@ -42,17 +42,16 @@ export default function FarkleModal({
   const handleClick = () => {
     setOpen(false);
     setFarkle(false);
-    rollDice();
+    setPossibleRollScore(0);
     setDiceValue((dice) =>
       dice.map((die) => ({ ...die, held: false, previouslyHeld: false }))
     );
+    rollDice();
     setLiveDiceScore(0);
-    setPossibleRollScore(0);
     setCurrentRoundScore(0);
     setGameStarted(true);
     setPrevRoundScore(0);
   };
-  console.log(prevRoundScore);
 
   return (
     <Modal open={open} handleClickClose={() => {}}>

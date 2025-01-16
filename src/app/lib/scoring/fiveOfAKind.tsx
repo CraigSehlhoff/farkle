@@ -17,6 +17,11 @@ export function fiveOfAKind(diceValue: DiceValue) {
   );
 
   if (fiveOfAKindValue > 0) {
+    diceValue.forEach((die) => {
+      if (die.value === fiveOfAKindValue && !die.held && !die.previouslyHeld)
+        die.canBeHeld = true;
+    });
+
     return 2000;
   }
 

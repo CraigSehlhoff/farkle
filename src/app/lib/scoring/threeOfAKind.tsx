@@ -18,7 +18,13 @@ export function threeOfAKind(diceValue: DiceValue) {
   );
 
   if (threeOfAKindValue > 0) {
-    return threeOfAKindValue === 1 ? 300 : threeOfAKindValue * 100;
+    diceValue.forEach((die) => {
+      if (die.value === threeOfAKindValue && !die.held && !die.previouslyHeld)
+        die.canBeHeld = true;
+    });
+    return threeOfAKindValue === 1 || threeOfAKindValue === 5
+      ? 0
+      : threeOfAKindValue * 100;
   }
 
   return 0;

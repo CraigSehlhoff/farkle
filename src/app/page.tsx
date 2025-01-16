@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { allScoring, heldAllScoring } from "./lib/scoring/allScoring";
 import FarkleModal from "./lib/Farkle";
 import Winning from "./lib/Winning";
+import ReactConfetti from "react-confetti";
 
 export default function Home() {
   const [diceValue, setDiceValue] = useState(allNewDice());
@@ -48,6 +49,7 @@ export default function Home() {
       return newDice;
     });
     console.log("possible roll score rolldice bottom:", possibleRollScore);
+    console.log(diceValue);
   }
 
   function keepRolling() {
@@ -77,7 +79,7 @@ export default function Home() {
   //winning condition
 
   useEffect(() => {
-    if (totalScore >= 10000) {
+    if (totalScore >= 1000) {
       setYouWin(true);
       console.log(youWin);
     }
@@ -101,7 +103,7 @@ export default function Home() {
   function holdDie(id: string) {
     setDiceValue(
       diceValue.map((die) => {
-        if (die.id === id) {
+        if (die.id === id && die.canBeHeld) {
           return { ...die, held: true ? !die.held : die.held };
         }
         if (die.id === id && die.previouslyHeld) {
@@ -199,7 +201,24 @@ export default function Home() {
           </button>
         )}
 
-        {/* There also has to be a way that I can stop people from adding dice that DO NOT add any new value to their total score...for example, if they rolled a single 1 they could add ALL other dice and keep rolling that way...there has to be someway to stop this from happening.... */}
+        {/* There also has to be a way that I can stop people from adding dice that DO NOT add any new value to their total score...for example, if they rolled a single 1 they could add ALL other dice and keep rolling that way...there has to be someway to stop this from happening.... 
+        alright lets think about this...how COULD i actually achieve this...
+        I would have to get rid of the continue turn/end turn/roll dice buttons if the current roll score does not increase when a die is held...but how could i do this?
+        I could probably use an array prototype to see if there are any new held dice and then compare the current round score to the previous round score...if the current round score is the same as the previous round score then the buttons would be disabled...
+        so with this in mind how could i code something like this?
+        okay no this is still flawed...as a user could hold an unscoring die and then a scoring die and hold them both before finishing their turn....shit
+
+        okay...so heres what I have to figure out...how can i make another variable on the diceValue that can tell IF the die could be held or not?  I have to make sure that that die has the ability to score that round...which honestly I might be able to do.  So right now the live dice score is already being figured out correctly WHICH IS HUGE.  How and why is this huge? because it shows that the diceValues are being checked correctly by being able to tell which die are making the correct combinations...now I just have to add the ability to get those die and turn on a new boolean of can be held or not...so lets break this down
+        -need to make a new attribute on the newDie function - canBeHeld = boolean
+        -need to figure out how I can update the scoring functions to make this new value true
+        -need to update the holdDice function so you are not able to hold a die that has a canBeHeld = false
+        -when to make it false...
+          -rolldice vs endturn/entergame/newgame...
+            -rolldice seems safe enough...but this could also keep the scoring issue of trying to hold a die that is already held...
+            -endturn/entergame/newgame/continueround...i mean whats wrong with this? like you cant change dice that are held in the middle of your turn anyway...so this works pretty well...yeah lets do it this way...
+        -thats it then...right?
+        */}
+
         {gameStarted &&
           !enteredGame &&
           !allDieHeld &&
@@ -236,21 +255,24 @@ export default function Home() {
       )}
 
       {youWin && (
-        <Winning
-          youWin={youWin}
-          setYouWin={setYouWin}
-          totalScore={totalScore}
-          setGameStarted={setGameStarted}
-          setDiceValue={setDiceValue}
-          setLiveDiceScore={setLiveDiceScore}
-          setPossibleRollScore={setPossibleRollScore}
-          setCurrentRoundScore={setCurrentRoundScore}
-          setPrevRoundScore={setPrevRoundScore}
-          setTotalScore={setTotalScore}
-          setFarkle={setFarkle}
-          rollDice={rollDice}
-          setEnteredGame={setEnteredGame}
-        />
+        <div>
+          <Winning
+            youWin={youWin}
+            setYouWin={setYouWin}
+            totalScore={totalScore}
+            setGameStarted={setGameStarted}
+            setDiceValue={setDiceValue}
+            setLiveDiceScore={setLiveDiceScore}
+            setPossibleRollScore={setPossibleRollScore}
+            setCurrentRoundScore={setCurrentRoundScore}
+            setPrevRoundScore={setPrevRoundScore}
+            setTotalScore={setTotalScore}
+            setFarkle={setFarkle}
+            rollDice={rollDice}
+            setEnteredGame={setEnteredGame}
+          />
+          <ReactConfetti />
+        </div>
       )}
 
       <Rules />
@@ -300,3 +322,6 @@ export default function Home() {
 //held
 //previously held
 //id...nanoid?
+
+//! okay....multiplayer how can i do this...
+//! maybe through state...so if we have state set up for lets say 4 players....four different states...

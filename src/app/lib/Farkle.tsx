@@ -13,7 +13,13 @@ type farkleProps = {
   diceValue: DiceValue;
   setDiceValue: React.Dispatch<
     React.SetStateAction<
-      { value: number; held: boolean; previouslyHeld: boolean; id: string }[]
+      {
+        value: number;
+        held: boolean;
+        previouslyHeld: boolean;
+        canBeHeld: boolean;
+        id: string;
+      }[]
     >
   >;
   setLiveDiceScore: React.Dispatch<React.SetStateAction<number>>;
@@ -44,7 +50,12 @@ export default function FarkleModal({
     setFarkle(false);
     setPossibleRollScore(0);
     setDiceValue((dice) =>
-      dice.map((die) => ({ ...die, held: false, previouslyHeld: false }))
+      dice.map((die) => ({
+        ...die,
+        held: false,
+        previouslyHeld: false,
+        canBeHeld: false,
+      }))
     );
     rollDice();
     setLiveDiceScore(0);

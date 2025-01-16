@@ -14,6 +14,11 @@ export function sixOfAKind(diceValue: DiceValue) {
   );
 
   if (sixOfAKindValue > 0) {
+    diceValue.forEach((die) => {
+      if (die.value === sixOfAKindValue && !die.held && !die.previouslyHeld) {
+        die.canBeHeld = true;
+      }
+    });
     return 3000;
   }
 

@@ -22,6 +22,9 @@ export function straight(diceValue: DiceValue) {
   });
 
   if (singleDieCount === 6) {
+    diceValue.forEach((die) => {
+      if (!die.held && !die.previouslyHeld) die.canBeHeld = true;
+    });
     return 1500;
   }
   return 0;

@@ -1,12 +1,5 @@
 "use client";
-import { allNewDice } from "./Dice";
-
-type DiceValue = {
-  value: number;
-  held: boolean;
-  previouslyHeld: boolean;
-  id: string;
-}[];
+import { allNewDice, DiceValue } from "./Dice";
 
 type newGameProps = {
   setGameStarted: (value: boolean) => void;

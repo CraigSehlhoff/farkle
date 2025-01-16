@@ -23,6 +23,9 @@ export function threePairs(diceValue: DiceValue) {
   });
 
   if (pairsCount === 3) {
+    diceValue.forEach((die) => {
+      if (!die.held && !die.previouslyHeld) die.canBeHeld = true;
+    });
     return 1500;
   }
 

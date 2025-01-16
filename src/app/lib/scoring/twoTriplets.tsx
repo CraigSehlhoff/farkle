@@ -23,6 +23,9 @@ export function twoTriplets(diceValue: DiceValue) {
   });
 
   if (tripletsCount === 2) {
+    diceValue.forEach((die) => {
+      if (!die.held && !die.previouslyHeld) die.canBeHeld = true;
+    });
     return 2500;
   }
 

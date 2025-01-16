@@ -25,6 +25,14 @@ export function fourAndTwoOfAKind(diceValue: DiceValue) {
   );
 
   if (fourOfAKindValue > 0 && twoOfAKindValue > 0) {
+    diceValue.forEach((die) => {
+      if (
+        (die.value === fourOfAKindValue || die.value === twoOfAKindValue) &&
+        !die.held &&
+        !die.previouslyHeld
+      )
+        die.canBeHeld = true;
+    });
     return 1500;
   }
 

@@ -17,6 +17,10 @@ export function fourOfAKind(diceValue: DiceValue) {
   );
 
   if (fourOfAKindValue > 0) {
+    diceValue.forEach((die) => {
+      if (die.value === fourOfAKindValue && !die.held && !die.previouslyHeld)
+        die.canBeHeld = true;
+    });
     return 1000;
   }
 

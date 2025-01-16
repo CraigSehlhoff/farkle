@@ -15,6 +15,7 @@ export function newDie() {
     value: Math.floor(Math.random() * 6) + 1,
     held: false,
     previouslyHeld: false,
+    canBeHeld: false,
     id: Math.random().toString(36).substr(2, 9),
   };
 }
@@ -31,6 +32,7 @@ export type DiceValue = {
   value: number;
   held: boolean;
   previouslyHeld: boolean;
+  canBeHeld: boolean;
   id: string;
 }[];
 

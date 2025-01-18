@@ -13,6 +13,7 @@ import { allScoring, heldAllScoring } from "./lib/scoring/allScoring";
 import FarkleModal from "./lib/Farkle";
 import Winning from "./lib/Winning";
 import ReactConfetti from "react-confetti";
+import { Multiplayer, Player } from "./components/Multiplayer";
 
 export default function Home() {
   const [diceValue, setDiceValue] = useState(allNewDice());
@@ -23,16 +24,17 @@ export default function Home() {
   const [prevRoundScore, setPrevRoundScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [farkle, setFarkle] = useState(false);
-  const [enteredGame, setEnteredGame] = useState(false);
   const [allDieHeld, setAllDieHeld] = useState(false);
   const [continueTurn, setContinueTurn] = useState(false);
   const [youWin, setYouWin] = useState(false);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(1);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
 
   const { totalPossibleRollScore } = allScoring(diceValue);
   const { heldTotalPossibleRollScore } = heldAllScoring(diceValue);
 
   function rollDice() {
-    console.log("possible roll score rolldice top:", possibleRollScore);
     setPrevRoundScore((prev) => prev + currentRoundScore);
     setDiceValue((dice) => {
       const newDice = dice.map((die) =>
@@ -45,26 +47,25 @@ export default function Home() {
         allScoring(newDice).totalPossibleRollScore;
 
       setPossibleRollScore(newTotalPossibleRollScore);
-      console.log("possible roll score rolldice middle:", possibleRollScore);
+
       return newDice;
     });
-    console.log("possible roll score rolldice bottom:", possibleRollScore);
-    console.log(diceValue);
+    console.log(players);
+    console.log(currentPlayer);
   }
 
-  function keepRolling() {
-    setDiceValue((dice) => {
-      const newDice = dice.map((die) =>
-        die.held || die.previouslyHeld
-          ? { ...die, previouslyHeld: false, held: false }
-          : newDie()
-      );
-
-      return newDice;
-    });
-    setAllDieHeld(false);
-    setContinueTurn(false);
-    rollDice();
+  function holdDie(id: string) {
+    setDiceValue(
+      diceValue.map((die) => {
+        if (die.id === id && die.canBeHeld) {
+          return { ...die, held: true ? !die.held : die.held };
+        }
+        if (die.id === id && die.previouslyHeld) {
+          return die;
+        }
+        return die;
+      })
+    );
   }
 
   useEffect(() => {
@@ -76,10 +77,23 @@ export default function Home() {
     }
   }, [diceValue]);
 
+  useEffect(() => {
+    const initialPlayers = Array.from(
+      { length: numberOfPlayers },
+      (_, index) => ({
+        name: `Player ${index + 1}`,
+        score: 0,
+        id: index,
+        enteredGame: false,
+      })
+    );
+    setPlayers(initialPlayers);
+  }, [numberOfPlayers]);
+
   //winning condition
 
   useEffect(() => {
-    if (totalScore >= 1000) {
+    if (totalScore >= 10000) {
       setYouWin(true);
       console.log(youWin);
     }
@@ -100,41 +114,75 @@ export default function Home() {
     setGameStarted(false);
   }
 
-  function holdDie(id: string) {
-    setDiceValue(
-      diceValue.map((die) => {
-        if (die.id === id && die.canBeHeld) {
-          return { ...die, held: true ? !die.held : die.held };
-        }
-        if (die.id === id && die.previouslyHeld) {
-          return die;
-        }
-        return die;
-      })
-    );
-  }
-
   function handleClickEnterGame() {
     console.log(diceValue);
-    setEnteredGame(true);
     setTotalScore(currentRoundScore + prevRoundScore);
     setPossibleRollScore(0);
     setPrevRoundScore(0);
-    console.log("prevRoundScore: enterGame", prevRoundScore);
     setLiveDiceScore(0);
     setCurrentRoundScore(0);
     setDiceValue(allNewDice());
     rollDice();
+    if (numberOfPlayers > 1) {
+      const currentPlayerObj = players.find(
+        (player) => player.id === currentPlayer
+      );
+      if (currentPlayerObj) {
+        currentPlayerObj.score += currentRoundScore + prevRoundScore;
+      }
+      if (
+        !currentPlayerObj?.enteredGame &&
+        currentRoundScore + prevRoundScore >= 500
+      ) {
+        setPlayers((prevPlayers) =>
+          prevPlayers.map((player) =>
+            player.id === currentPlayer
+              ? { ...player, enteredGame: true }
+              : player
+          )
+        );
+      }
+
+      endTurnMultiplayer();
+    }
   }
 
   function handleClickEndTurn() {
     setTotalScore((prev) => prev + currentRoundScore + prevRoundScore);
     setPossibleRollScore(0);
     setPrevRoundScore(0);
-    console.log("prevRoundScore: endTurn", prevRoundScore);
     setLiveDiceScore(0);
     setCurrentRoundScore(0);
     setDiceValue(allNewDice());
+    rollDice();
+    if (numberOfPlayers > 1) {
+      const currentPlayerObj = players.find(
+        (player) => player.id === currentPlayer
+      );
+      if (currentPlayerObj) {
+        currentPlayerObj.score += currentRoundScore + prevRoundScore;
+      }
+      endTurnMultiplayer();
+    }
+  }
+
+  function endTurnMultiplayer() {
+    setCurrentPlayer((prevIndex) => (prevIndex + 1) % players.length);
+    setPrevRoundScore(0);
+  }
+
+  function keepRolling() {
+    setDiceValue((dice) => {
+      const newDice = dice.map((die) =>
+        die.held || die.previouslyHeld
+          ? { ...die, previouslyHeld: false, held: false }
+          : newDie()
+      );
+
+      return newDice;
+    });
+    setAllDieHeld(false);
+    setContinueTurn(false);
     rollDice();
   }
 
@@ -150,17 +198,20 @@ export default function Home() {
       {!gameStarted && <PreGameDice />}
       <div className="mt-5">
         <NewGame
-          setGameStarted={setGameStarted}
           setDiceValue={setDiceValue}
+          setGameStarted={setGameStarted}
           setLiveDiceScore={setLiveDiceScore}
           setPossibleRollScore={setPossibleRollScore}
           setCurrentRoundScore={setCurrentRoundScore}
           setPrevRoundScore={setPrevRoundScore}
           setTotalScore={setTotalScore}
           setFarkle={setFarkle}
-          rollDice={rollDice}
-          setEnteredGame={setEnteredGame}
           setYouWin={setYouWin}
+          players={players}
+          setPlayers={setPlayers}
+          setNumberOfPlayers={setNumberOfPlayers}
+          setCurrentPlayer={setCurrentPlayer}
+          rollDice={rollDice}
         />
       </div>
 
@@ -170,7 +221,14 @@ export default function Home() {
       {gameStarted && prevRoundScore > 0 && (
         <div>Prev Round Score: {prevRoundScore}</div>
       )}
-      {enteredGame && <div>Total Score: {totalScore}</div>}
+      {players.find((player) => player.enteredGame) &&
+        numberOfPlayers === 1 && <div>Total Score: {totalScore}</div>}
+      {numberOfPlayers > 1 && (
+        <div className="ml-auto">
+          <p>Player 1: {players[0].score}</p>
+          <p>Player 2: {players[1]?.score}</p>
+        </div>
+      )}
 
       {gameStarted && (
         <div className="text-center mt-5">
@@ -182,6 +240,19 @@ export default function Home() {
         <div className="text-center mt-5">
           Held Dice: <HeldDice diceValue={diceValue} holdDie={holdDie} />
         </div>
+      )}
+
+      {numberOfPlayers > 1 && (
+        <Multiplayer
+          currentRoundScore={currentRoundScore}
+          totalScore={totalScore}
+          players={players}
+          setPlayers={setPlayers}
+          numberOfPlayers={numberOfPlayers}
+          currentPlayer={currentPlayer}
+          setCurrentPlayer={setCurrentPlayer}
+          handleClickEndTurn={handleClickEndTurn}
+        />
       )}
 
       {/* BUTTONS!!! */}
@@ -201,29 +272,11 @@ export default function Home() {
           </button>
         )}
 
-        {/* There also has to be a way that I can stop people from adding dice that DO NOT add any new value to their total score...for example, if they rolled a single 1 they could add ALL other dice and keep rolling that way...there has to be someway to stop this from happening.... 
-        alright lets think about this...how COULD i actually achieve this...
-        I would have to get rid of the continue turn/end turn/roll dice buttons if the current roll score does not increase when a die is held...but how could i do this?
-        I could probably use an array prototype to see if there are any new held dice and then compare the current round score to the previous round score...if the current round score is the same as the previous round score then the buttons would be disabled...
-        so with this in mind how could i code something like this?
-        okay no this is still flawed...as a user could hold an unscoring die and then a scoring die and hold them both before finishing their turn....shit
-
-        okay...so heres what I have to figure out...how can i make another variable on the diceValue that can tell IF the die could be held or not?  I have to make sure that that die has the ability to score that round...which honestly I might be able to do.  So right now the live dice score is already being figured out correctly WHICH IS HUGE.  How and why is this huge? because it shows that the diceValues are being checked correctly by being able to tell which die are making the correct combinations...now I just have to add the ability to get those die and turn on a new boolean of can be held or not...so lets break this down
-        -need to make a new attribute on the newDie function - canBeHeld = boolean
-        -need to figure out how I can update the scoring functions to make this new value true
-        -need to update the holdDice function so you are not able to hold a die that has a canBeHeld = false
-        -when to make it false...
-          -rolldice vs endturn/entergame/newgame...
-            -rolldice seems safe enough...but this could also keep the scoring issue of trying to hold a die that is already held...
-            -endturn/entergame/newgame/continueround...i mean whats wrong with this? like you cant change dice that are held in the middle of your turn anyway...so this works pretty well...yeah lets do it this way...
-        -thats it then...right?
-        */}
-
         {gameStarted &&
-          !enteredGame &&
           !allDieHeld &&
           currentRoundScore > 0 &&
-          currentRoundScore + prevRoundScore >= 500 && (
+          currentRoundScore + prevRoundScore >= 500 &&
+          !players[currentPlayer]?.enteredGame && (
             <button className={buttonClass} onClick={handleClickEnterGame}>
               Enter Game
             </button>
@@ -232,46 +285,53 @@ export default function Home() {
         {gameStarted &&
           !allDieHeld &&
           currentRoundScore > 0 &&
-          totalScore > 0 && (
+          totalScore > 0 &&
+          players[currentPlayer]?.enteredGame && (
             <button className={buttonClass} onClick={handleClickEndTurn}>
               End Turn
             </button>
           )}
       </div>
+
       {farkle && (
         <FarkleModal
-          prevRoundScore={prevRoundScore}
-          setPrevRoundScore={setPrevRoundScore}
-          rollDice={rollDice}
           diceValue={diceValue}
           setDiceValue={setDiceValue}
+          setGameStarted={setGameStarted}
           setLiveDiceScore={setLiveDiceScore}
           setPossibleRollScore={setPossibleRollScore}
+          prevRoundScore={prevRoundScore}
           setCurrentRoundScore={setCurrentRoundScore}
+          setPrevRoundScore={setPrevRoundScore}
           farkle={farkle}
           setFarkle={setFarkle}
-          setGameStarted={setGameStarted}
+          players={players}
+          currentPlayer={currentPlayer}
+          rollDice={rollDice}
+          endTurnMultiplayer={endTurnMultiplayer}
         />
       )}
 
       {youWin && (
         <div>
+          <ReactConfetti />
           <Winning
-            youWin={youWin}
-            setYouWin={setYouWin}
-            totalScore={totalScore}
-            setGameStarted={setGameStarted}
             setDiceValue={setDiceValue}
+            setGameStarted={setGameStarted}
             setLiveDiceScore={setLiveDiceScore}
             setPossibleRollScore={setPossibleRollScore}
             setCurrentRoundScore={setCurrentRoundScore}
             setPrevRoundScore={setPrevRoundScore}
+            totalScore={totalScore}
             setTotalScore={setTotalScore}
             setFarkle={setFarkle}
+            youWin={youWin}
+            setYouWin={setYouWin}
+            players={players}
+            setPlayers={setPlayers}
+            currentPlayer={currentPlayer}
             rollDice={rollDice}
-            setEnteredGame={setEnteredGame}
           />
-          <ReactConfetti />
         </div>
       )}
 

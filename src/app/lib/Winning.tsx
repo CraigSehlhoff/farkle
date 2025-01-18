@@ -4,6 +4,7 @@ import Modal from "../components/Modal";
 import Confetti from "react-confetti";
 import { Bangers } from "next/font/google";
 import { DiceValue, allNewDice } from "../components/Dice";
+import { Player } from "../components/Multiplayer";
 
 const bangersFont = Bangers({
   subsets: ["latin"],
@@ -23,7 +24,9 @@ type WinningProps = {
   setTotalScore: (value: number) => void;
   setFarkle: (value: boolean) => void;
   rollDice: () => void;
-  setEnteredGame: (value: boolean) => void;
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
+  currentPlayer: number;
 };
 
 export default function Winning({
@@ -39,7 +42,9 @@ export default function Winning({
   setTotalScore,
   setFarkle,
   rollDice,
-  setEnteredGame,
+  players,
+  setPlayers,
+  currentPlayer,
 }: WinningProps) {
   const [open, setOpen] = React.useState(youWin);
 
@@ -56,13 +61,22 @@ export default function Winning({
     setCurrentRoundScore(0);
     setTotalScore(0);
     setFarkle(false);
-    setEnteredGame(false);
+    setPlayers(
+      players.map((player) => ({ ...player, enteredGame: false, score: 0 }))
+    );
   };
 
   return (
     <Modal open={open} handleClickClose={() => {}}>
       <div className="flex flex-col text-black items-center flex-wrap justify-center h-full">
         <div className="mt-auto">
+          <div className="text-4xl text-center">
+            Congratulations{" "}
+            {players.map((player) => {
+              if (player.score >= 10000) return player.name;
+            })}
+            !
+          </div>
           <div
             className={`${bangersFont.className} bg-slate-100 text-black text-8xl text-center `}
           >

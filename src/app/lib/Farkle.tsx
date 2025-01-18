@@ -5,6 +5,7 @@
 import React from "react";
 import Modal from "../components/Modal";
 import { LiveDice, HeldDice, DiceValue } from "../components/Dice";
+import { Player } from "../components/Multiplayer";
 
 type farkleProps = {
   prevRoundScore: number;
@@ -28,6 +29,9 @@ type farkleProps = {
   farkle: boolean;
   setFarkle: React.Dispatch<React.SetStateAction<boolean>>;
   setGameStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  endTurnMultiplayer: () => void;
+  players: Player[];
+  currentPlayer: number;
 };
 
 export default function FarkleModal({
@@ -42,6 +46,9 @@ export default function FarkleModal({
   farkle,
   setFarkle,
   setGameStarted,
+  endTurnMultiplayer,
+  players,
+  currentPlayer,
 }: farkleProps) {
   const [open, setOpen] = React.useState(farkle);
 
@@ -62,6 +69,7 @@ export default function FarkleModal({
     setCurrentRoundScore(0);
     setGameStarted(true);
     setPrevRoundScore(0);
+    endTurnMultiplayer();
   };
 
   return (
@@ -71,7 +79,10 @@ export default function FarkleModal({
       </h1>
       <div className="flex flex-col text-black items-center gap-5">
         <div>
-          You Farkled! You lost {prevRoundScore} potential points this round!
+          {players.map((player) => {
+            if (player.id === currentPlayer) return player.name;
+          })}{" "}
+          Farkled! They lost {prevRoundScore} potential points this round!
         </div>
         You just rolled:
         <LiveDice diceValue={diceValue} holdDie={() => {}} />

@@ -13,7 +13,13 @@ import { allScoring, heldAllScoring } from "./lib/scoring/allScoring";
 import FarkleModal from "./lib/Farkle";
 import Winning from "./lib/Winning";
 import ReactConfetti from "react-confetti";
-import { Multiplayer, Player } from "./components/Multiplayer";
+
+export type Player = {
+  name: string;
+  score: number;
+  id: number;
+  enteredGame: boolean;
+};
 
 export default function Home() {
   const [diceValue, setDiceValue] = useState(allNewDice());
@@ -50,8 +56,6 @@ export default function Home() {
 
       return newDice;
     });
-    console.log(players);
-    console.log(currentPlayer);
   }
 
   function holdDie(id: string) {
@@ -68,6 +72,7 @@ export default function Home() {
     );
   }
 
+  //setting up the scoring as well as condtions for allDiceHeld
   useEffect(() => {
     setLiveDiceScore(totalPossibleRollScore);
     setCurrentRoundScore(heldTotalPossibleRollScore);
@@ -77,6 +82,7 @@ export default function Home() {
     }
   }, [diceValue]);
 
+  //setting up players based on how many players there are
   useEffect(() => {
     const initialPlayers = Array.from(
       { length: numberOfPlayers },
@@ -91,17 +97,15 @@ export default function Home() {
   }, [numberOfPlayers]);
 
   //winning condition
-
   useEffect(() => {
-    if (totalScore >= 10000) {
+    if (
+      totalScore >= 10000 &&
+      players.find((player) => player.score >= 10000)
+    ) {
       setYouWin(true);
-      console.log(youWin);
     }
   }, [totalScore]);
-
-  useEffect(() => {
-    setPossibleRollScore(totalPossibleRollScore);
-  }, [farkle]);
+  //!You just updated this...make sure its good!!!
 
   //setting farkle!
   if (
@@ -113,9 +117,11 @@ export default function Home() {
     setFarkle(true);
     setGameStarted(false);
   }
+  useEffect(() => {
+    setPossibleRollScore(totalPossibleRollScore);
+  }, [farkle]);
 
   function handleClickEnterGame() {
-    console.log(diceValue);
     setTotalScore(currentRoundScore + prevRoundScore);
     setPossibleRollScore(0);
     setPrevRoundScore(0);
@@ -123,7 +129,7 @@ export default function Home() {
     setCurrentRoundScore(0);
     setDiceValue(allNewDice());
     rollDice();
-    if (numberOfPlayers > 1) {
+    if (numberOfPlayers >= 1) {
       const currentPlayerObj = players.find(
         (player) => player.id === currentPlayer
       );
@@ -155,7 +161,7 @@ export default function Home() {
     setCurrentRoundScore(0);
     setDiceValue(allNewDice());
     rollDice();
-    if (numberOfPlayers > 1) {
+    if (numberOfPlayers >= 1) {
       const currentPlayerObj = players.find(
         (player) => player.id === currentPlayer
       );
@@ -189,125 +195,144 @@ export default function Home() {
   const buttonClass =
     "border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider";
 
+  const newGameProps = {
+    setDiceValue,
+    setGameStarted,
+    setLiveDiceScore,
+    setPossibleRollScore,
+    setCurrentRoundScore,
+    setPrevRoundScore,
+    setTotalScore,
+    setFarkle,
+    setYouWin,
+    players,
+    setPlayers,
+    setNumberOfPlayers,
+    setCurrentPlayer,
+    rollDice,
+  };
+
+  const sharedFarkleWinningProps = {
+    setDiceValue,
+    setGameStarted,
+    setLiveDiceScore,
+    setPossibleRollScore,
+    setCurrentRoundScore,
+    setPrevRoundScore,
+    setFarkle,
+    players,
+    rollDice,
+  };
+
   return (
-    <div className="h-screen">
-      <div className="text-center mt-10 mb-10 flex justify-center align-middle">
-        welcome to:
-        <span className="text-5xl">FARKLE!</span>
-      </div>
-      {!gameStarted && <PreGameDice />}
-      <div className="mt-5">
-        <NewGame
-          setDiceValue={setDiceValue}
-          setGameStarted={setGameStarted}
-          setLiveDiceScore={setLiveDiceScore}
-          setPossibleRollScore={setPossibleRollScore}
-          setCurrentRoundScore={setCurrentRoundScore}
-          setPrevRoundScore={setPrevRoundScore}
-          setTotalScore={setTotalScore}
-          setFarkle={setFarkle}
-          setYouWin={setYouWin}
-          players={players}
-          setPlayers={setPlayers}
-          setNumberOfPlayers={setNumberOfPlayers}
-          setCurrentPlayer={setCurrentPlayer}
-          rollDice={rollDice}
-        />
-      </div>
-
-      {gameStarted && <div>Live Dice Score: {liveDiceScore}</div>}
-      {gameStarted && <div>Possible Roll Score: {possibleRollScore}</div>}
-      {gameStarted && <div>Current Roll Score: {currentRoundScore}</div>}
-      {gameStarted && prevRoundScore > 0 && (
-        <div>Prev Round Score: {prevRoundScore}</div>
-      )}
-      {players.find((player) => player.enteredGame) &&
-        numberOfPlayers === 1 && <div>Total Score: {totalScore}</div>}
-      {numberOfPlayers > 1 && (
-        <div className="ml-auto">
-          <p>Player 1: {players[0].score}</p>
-          <p>Player 2: {players[1]?.score}</p>
+    <div className="h-screen flex flex-col">
+      {!gameStarted && (
+        <div className="mt-auto mb-auto">
+          <div className="text-center mt-10 mb-10 flex justify-center align-middle">
+            welcome to:
+            <span className="text-5xl">FARKLE!</span>
+          </div>
+          <>
+            <PreGameDice />
+            <div className="mt-5">
+              <NewGame {...newGameProps} />
+            </div>
+          </>
         </div>
       )}
 
+      {/* all scoring text */}
       {gameStarted && (
-        <div className="text-center mt-5">
-          Live Dice: <LiveDice diceValue={diceValue} holdDie={holdDie} />
-        </div>
-      )}
+        <div className="w-2/3 flex  ml-auto mr-auto mt-auto mb-auto">
+          <div className="mr-auto text-left">
+            <div>Live Dice Score: {liveDiceScore}</div>
+            <div>Possible Roll Score: {possibleRollScore}</div>
+            <div>Current Roll Score: {currentRoundScore}</div>
+            {prevRoundScore > 0 && (
+              <div>Prev Round Score: {prevRoundScore}</div>
+            )}
+            {players.find((player) => player.enteredGame) &&
+              numberOfPlayers === 1 && <div>Total Score: {totalScore}</div>}
+          </div>
 
-      {gameStarted && (
-        <div className="text-center mt-5">
-          Held Dice: <HeldDice diceValue={diceValue} holdDie={holdDie} />
-        </div>
-      )}
-
-      {numberOfPlayers > 1 && (
-        <Multiplayer
-          currentRoundScore={currentRoundScore}
-          totalScore={totalScore}
-          players={players}
-          setPlayers={setPlayers}
-          numberOfPlayers={numberOfPlayers}
-          currentPlayer={currentPlayer}
-          setCurrentPlayer={setCurrentPlayer}
-          handleClickEndTurn={handleClickEndTurn}
-        />
-      )}
-
-      {/* BUTTONS!!! */}
-      <div className="flex justify-center gap-5 mr-auto ml-auto max-w-60 flex-wrap mt-5">
-        {gameStarted &&
-          !continueTurn &&
-          !allDieHeld &&
-          currentRoundScore > 0 && (
-            <button className={buttonClass} onClick={rollDice}>
-              Roll Dice
-            </button>
+          {numberOfPlayers > 1 && (
+            <div className="ml-auto mt-auto mb-auto">
+              <p>Player 1: {players[0].score}</p>
+              <p>Player 2: {players[1]?.score}</p>
+              {numberOfPlayers > 2 && <p>Player 3: {players[2]?.score}</p>}
+              {numberOfPlayers > 3 && <p>Player 4: {players[3]?.score}</p>}
+            </div>
           )}
-
-        {continueTurn && gameStarted && (
-          <button className={buttonClass} onClick={keepRolling}>
-            Continue Turn
-          </button>
+        </div>
+      )}
+      <div className="mt-auto mb-auto max-w-fit ml-auto mr-auto">
+        {numberOfPlayers > 1 && (
+          <p className="text-center text-3xl tracking-widest">
+            {players.map((player) => {
+              if (player.id === currentPlayer) return player.name;
+            })}
+            &lsquo;s turn
+          </p>
         )}
 
-        {gameStarted &&
-          !allDieHeld &&
-          currentRoundScore > 0 &&
-          currentRoundScore + prevRoundScore >= 500 &&
-          !players[currentPlayer]?.enteredGame && (
-            <button className={buttonClass} onClick={handleClickEnterGame}>
-              Enter Game
+        {/* Dice visuals */}
+        {gameStarted && (
+          <div className="text-center mt-5">
+            Live Dice: <LiveDice diceValue={diceValue} holdDie={holdDie} />
+          </div>
+        )}
+
+        {gameStarted && (
+          <div className="text-center mt-5">
+            Held Dice: <HeldDice diceValue={diceValue} holdDie={holdDie} />
+          </div>
+        )}
+
+        {/* BUTTONS!!! */}
+        <div className="flex justify-center gap-5 mr-auto ml-auto max-w-60 flex-wrap mt-5">
+          {gameStarted &&
+            !continueTurn &&
+            !allDieHeld &&
+            currentRoundScore > 0 && (
+              <button className={buttonClass} onClick={rollDice}>
+                Roll Dice
+              </button>
+            )}
+
+          {continueTurn && gameStarted && (
+            <button className={buttonClass} onClick={keepRolling}>
+              Continue Turn
             </button>
           )}
 
-        {gameStarted &&
-          !allDieHeld &&
-          currentRoundScore > 0 &&
-          totalScore > 0 &&
-          players[currentPlayer]?.enteredGame && (
-            <button className={buttonClass} onClick={handleClickEndTurn}>
-              End Turn
-            </button>
-          )}
+          {gameStarted &&
+            !allDieHeld &&
+            currentRoundScore > 0 &&
+            currentRoundScore + prevRoundScore >= 500 &&
+            !players[currentPlayer]?.enteredGame && (
+              <button className={buttonClass} onClick={handleClickEnterGame}>
+                Enter Game
+              </button>
+            )}
+
+          {gameStarted &&
+            !allDieHeld &&
+            currentRoundScore > 0 &&
+            totalScore > 0 &&
+            players[currentPlayer]?.enteredGame && (
+              <button className={buttonClass} onClick={handleClickEndTurn}>
+                End Turn
+              </button>
+            )}
+        </div>
       </div>
-
       {farkle && (
         <FarkleModal
+          {...sharedFarkleWinningProps}
           diceValue={diceValue}
-          setDiceValue={setDiceValue}
-          setGameStarted={setGameStarted}
-          setLiveDiceScore={setLiveDiceScore}
-          setPossibleRollScore={setPossibleRollScore}
           prevRoundScore={prevRoundScore}
-          setCurrentRoundScore={setCurrentRoundScore}
-          setPrevRoundScore={setPrevRoundScore}
           farkle={farkle}
-          setFarkle={setFarkle}
-          players={players}
           currentPlayer={currentPlayer}
-          rollDice={rollDice}
           endTurnMultiplayer={endTurnMultiplayer}
         />
       )}
@@ -316,26 +341,19 @@ export default function Home() {
         <div>
           <ReactConfetti />
           <Winning
-            setDiceValue={setDiceValue}
-            setGameStarted={setGameStarted}
-            setLiveDiceScore={setLiveDiceScore}
-            setPossibleRollScore={setPossibleRollScore}
-            setCurrentRoundScore={setCurrentRoundScore}
-            setPrevRoundScore={setPrevRoundScore}
+            {...sharedFarkleWinningProps}
             totalScore={totalScore}
             setTotalScore={setTotalScore}
-            setFarkle={setFarkle}
             youWin={youWin}
             setYouWin={setYouWin}
-            players={players}
             setPlayers={setPlayers}
-            currentPlayer={currentPlayer}
-            rollDice={rollDice}
           />
         </div>
       )}
-
-      <Rules />
+      <div className="mt-auto mb-5">
+        <Rules />
+        {gameStarted && <NewGame {...newGameProps} />}
+      </div>
     </div>
   );
 }

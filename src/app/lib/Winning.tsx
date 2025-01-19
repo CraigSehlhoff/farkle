@@ -2,9 +2,9 @@
 import React from "react";
 import Modal from "../components/Modal";
 import Confetti from "react-confetti";
-import { Bangers } from "next/font/google";
+import { Bangers } from "@next/font/google";
 import { DiceValue, allNewDice } from "../components/Dice";
-import { Player } from "../components/Multiplayer";
+import { Player } from "../page";
 
 const bangersFont = Bangers({
   subsets: ["latin"],
@@ -26,7 +26,6 @@ type WinningProps = {
   rollDice: () => void;
   players: Player[];
   setPlayers: (players: Player[]) => void;
-  currentPlayer: number;
 };
 
 export default function Winning({
@@ -44,7 +43,6 @@ export default function Winning({
   rollDice,
   players,
   setPlayers,
-  currentPlayer,
 }: WinningProps) {
   const [open, setOpen] = React.useState(youWin);
 

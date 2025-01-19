@@ -64,21 +64,51 @@ export default function Rules() {
             <div>
               <h2 className="underline font-bold">Scoring</h2>
               <ol className="text-left border-l-8 border-double border-black pl-10 max-w-72 list-disc">
-                <li>One 1 = 100 points</li>
-                <li>One 5 = 50 points</li>
-                <li>Three 1&apos;s = 300 points</li>
-                <li>Three 2&apos;s = 200 points</li>
-                <li>Three 3&apos;s = 300 points</li>
-                <li>Three 4&apos;s = 400 points</li>
-                <li>Three 5&apos;s = 500 points</li>
-                <li>Three 6&apos;s = 600 points</li>
-                <li>Four of a kind = 1000 points</li>
-                <li>Five of a kind = 2000 points</li>
-                <li>Six of a kind = 3000 points</li>
-                <li>Straight (1-6) = 1500 points</li>
-                <li>Three pairs = 1500 points</li>
-                <li>Four of a kind + a pair = 1500 points</li>
-                <li>Two triplets = 2500 points</li>
+                <li>
+                  <strong>One 1</strong> = 100 points
+                </li>
+                <li>
+                  <strong>One 5 </strong>= 50 points
+                </li>
+                <li>
+                  <strong>Three 1&apos;s </strong>= 300 points
+                </li>
+                <li>
+                  <strong>Three 2&apos;s </strong>= 200 points
+                </li>
+                <li>
+                  <strong>Three 3&apos;s </strong>= 300 points
+                </li>
+                <li>
+                  <strong>Three 4&apos;s </strong>= 400 points
+                </li>
+                <li>
+                  <strong>Three 5&apos;s </strong>= 500 points
+                </li>
+                <li>
+                  <strong>Three 6&apos;s </strong>= 600 points
+                </li>
+                <li>
+                  <strong>Four of a kind </strong>= 1000 points
+                </li>
+                <li>
+                  <strong>Five of a kind </strong>= 2000 points
+                </li>
+                <li>
+                  <strong>Six of a kind </strong>= 3000 points
+                </li>
+                <li>
+                  <strong>Straight (1-6) </strong>= 1500 points
+                </li>
+                <li>
+                  <strong>Three pairs </strong>= 1500 points
+                </li>
+                <li>
+                  <strong>Four of a kind + a pair </strong>= 1500 points
+                </li>
+                <li>
+                  <strong>Two triplets </strong>= 2500 points
+                </li>
                 <li className="font-semibold">
                   **You can not combine held dice with new dice to make better
                   combinations. For example if you are holding two 5&apos;s and

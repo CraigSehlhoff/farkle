@@ -5,7 +5,7 @@
 import React from "react";
 import Modal from "../components/Modal";
 import { LiveDice, HeldDice, DiceValue } from "../components/Dice";
-import { Player } from "../components/Multiplayer";
+import { Player } from "../page";
 
 type farkleProps = {
   prevRoundScore: number;

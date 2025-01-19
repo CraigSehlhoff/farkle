@@ -1,6 +1,6 @@
 "use client";
 import { allNewDice, DiceValue } from "./Dice";
-import { Player } from "./Multiplayer";
+import { Player } from "../page";
 
 type newGameProps = {
   setGameStarted: (value: boolean) => void;
@@ -66,43 +66,45 @@ export function NewGame({
     newGame();
   }
 
-  // function threePlayers() {
-  //   setNumberOfPlayers(3);
-  //   newGame();
-  // }
+  function threePlayers() {
+    setNumberOfPlayers(3);
+    newGame();
+  }
 
-  // function fourPlayers() {
-  //   setNumberOfPlayers(4);
-  //   newGame();
-  // }
+  function fourPlayers() {
+    setNumberOfPlayers(4);
+    newGame();
+  }
 
   //when you click on the new game multiplayer button I would like for the player to choose how many players will be in the game.
   return (
-    <div className="flex justify-center flex-col gap-4">
+    <div className="flex justify-center gap-4">
       <button
-        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
+        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto"
         onClick={onePlayer}
       >
         New Game - 1 Player
       </button>
-      <button
-        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
-        onClick={twoPlayers}
-      >
-        New Game - 2 players
-      </button>{" "}
-      {/* <button
-        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
-        onClick={threePlayers}
-      >
-        New Game - 3 players
-      </button>{" "}
-      <button
-        className="border-2 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
-        onClick={fourPlayers}
-      >
-        New Game - 4 players
-      </button> */}
+      <div className="mr-auto">
+        <button
+          className="border-2 border-white p-1 rounded-2xl hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
+          onClick={twoPlayers}
+        >
+          2
+        </button>{" "}
+        <button
+          className="border-2 border-white p-1 rounded-2xl hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
+          onClick={threePlayers}
+        >
+          3
+        </button>{" "}
+        <button
+          className="border-2 border-white p-1 rounded-2xl hover:bg-white hover:text-black hover:scale-110 tracking-wider ml-auto mr-auto"
+          onClick={fourPlayers}
+        >
+          4
+        </button>
+      </div>
     </div>
   );
 }

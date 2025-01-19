@@ -28,8 +28,8 @@ const Modal = ({ open, handleClickClose, children }: modalProps) => {
     >
       <div
         style={{
-          height: 500,
-          width: 600,
+          // height: 500,
+          // width: auto,
           margin: "auto",
           padding: "2%",
           border: "2px solid #000",

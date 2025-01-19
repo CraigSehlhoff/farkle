@@ -56,6 +56,7 @@ export default function Home() {
 
       return newDice;
     });
+    console.log(diceValue);
   }
 
   function holdDie(id: string) {
@@ -223,9 +224,8 @@ export default function Home() {
     players,
     rollDice,
   };
-
   return (
-    <div className="h-screen flex flex-col bg-black text-white">
+    <div className="h-screen flex flex-col bg-background text-foreground">
       {!gameStarted && (
         <div className="mt-auto mb-auto">
           <div className="text-center mt-10 mb-10 flex justify-center align-middle">

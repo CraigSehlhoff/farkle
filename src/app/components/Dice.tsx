@@ -52,6 +52,7 @@ export function LiveDice({ diceValue, holdDie }: DiceProps) {
           width={100}
           height={100}
           onClick={() => holdDie(die.id)}
+          className="rounded-xl"
         />
       )
     );
@@ -70,6 +71,7 @@ export function HeldDice({ diceValue, holdDie }: DiceProps) {
           width={100}
           height={100}
           onClick={() => holdDie(die.id)}
+          className="rounded-xl"
         />
       )
     );
@@ -80,7 +82,14 @@ export function HeldDice({ diceValue, holdDie }: DiceProps) {
 export function PreGameDice() {
   const getDiceImages = diceImages.map((image) => {
     return (
-      <Image key={image} alt="dice" src={`${image}`} width={100} height={100} />
+      <Image
+        key={image}
+        alt="dice"
+        src={`${image}`}
+        width={100}
+        height={100}
+        className="rounded-xl"
+      />
     );
   });
   return <div className="flex flex-wrap justify-center">{getDiceImages}</div>;

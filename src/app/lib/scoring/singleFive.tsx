@@ -22,6 +22,11 @@ export function singleFive(diceValue: DiceValue) {
     newScore = fives.length * 50;
   }
   if (fives.length === 3) {
+    diceValue.forEach((die) => {
+      if (die.value === 5) {
+        die.canBeHeld = true;
+      }
+    });
     newScore = 500;
   }
   return newScore;

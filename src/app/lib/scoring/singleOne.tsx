@@ -21,6 +21,11 @@ export function singleOne(diceValue: DiceValue) {
     newScore = ones.length * 100;
   }
   if (ones.length === 3) {
+    diceValue.forEach((die) => {
+      if (die.value === 1) {
+        die.canBeHeld = true;
+      }
+    });
     newScore = 300;
   }
   return newScore;

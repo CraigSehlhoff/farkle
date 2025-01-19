@@ -225,7 +225,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-black text-white">
       {!gameStarted && (
         <div className="mt-auto mb-auto">
           <div className="text-center mt-10 mb-10 flex justify-center align-middle">

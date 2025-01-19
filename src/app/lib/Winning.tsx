@@ -2,14 +2,14 @@
 import React from "react";
 import Modal from "../components/Modal";
 import Confetti from "react-confetti";
-import { Bangers } from "@next/font/google";
+// import { Bangers } from "@next/font/google";
 import { DiceValue, allNewDice } from "../components/Dice";
 import { Player } from "../page";
 
-const bangersFont = Bangers({
-  subsets: ["latin"],
-  weight: ["400"],
-});
+// const bangersFont = Bangers({
+//   subsets: ["latin"],
+//   weight: ["400"],
+// });
 
 type WinningProps = {
   youWin: boolean;
@@ -76,7 +76,10 @@ export default function Winning({
             !
           </div>
           <div
-            className={`${bangersFont.className} bg-slate-100 text-black text-8xl text-center `}
+            className="bg-slate-100 text-black text-8xl text-center"
+            // className={`
+            //   ${bangersFont.className}
+            //  bg-slate-100 text-black text-8xl text-center `}
           >
             YOU DID IT!!!
           </div>
